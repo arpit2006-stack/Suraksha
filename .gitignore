@@ -1,0 +1,33 @@
+# =========================
+# Node & Frontend (React/Tailwind)
+# =========================
+node_modules/
+dist/
+build/
+.npm
+.eslintcache
+
+# =========================
+# Python & ML (FastAPI)
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env_python
+*.egg-info/
+
+# =========================
+# Environment & Secrets (CRITICAL)
+# =========================
+.env
+.env.local
+.env.*.local
+*.pem
+
+# =========================
+# OS & Misc
+# =========================
+.DS_Store
+Thumbs.db
