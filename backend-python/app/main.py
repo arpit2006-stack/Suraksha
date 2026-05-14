@@ -3,37 +3,38 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
 
-# Apne auth router ko import karna zaruri hai
-from app.api.v1 import auth
-
-# Apne security router ko import karna zaruri haifrom app.api.v1 import security
-from app.api.v1 import auth, security
-
-# Env variables load karo
+# Load env variables first, before importing anything that uses them
 load_dotenv()
 
-app = FastAPI(title="SuRaksha Python Engine")
+# Import routers
+from app.api.v1 import auth
+from app.api.v1 import security
 
-# CORS setup (MERN aur Frontend ko connect karne ke liye mandatory)
+app = FastAPI(
+    title="SuRaksha Python Engine",
+    description="AI-powered security and compliance backend for SuRaksha.",
+    version="1.0.0"
+)
+
+# CORS setup (required for frontend + MERN integration)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Production mein ise specific domain kar denge
+    allow_origins=["*"],  # TODO: Lock to specific domains in production
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-# Connecting the routes (Dhyan rakhna, function ka naam include_router hai)
+# Register routers
 app.include_router(auth.router, prefix="/api/v1", tags=["Authentication"])
-# Security router ko bhi include karna hai
 app.include_router(security.router, prefix="/api/v1/security", tags=["Security & Privacy"])
 
-# Root health check endpoint (Sab merge kar diya yahan)
+# Root health check endpoint
 @app.get("/")
 async def status():
     return {
         "status": "Online",
         "api_key_loaded": bool(os.getenv("GOOGLE_API_KEY")),
-        "port": os.getenv("PORT", 8000),  # Agar .env mein port nahi mila toh default 8000 lega
+        "port": int(os.getenv("PORT", 8000)),
         "environment": os.getenv("ENVIRONMENT", "development")
     }
