@@ -54,3 +54,15 @@ class PDFComplianceResponse(BaseModel):
     filename: str
     analysis: List[ComplianceTask]
     compliance_score: int
+
+# Purane BBA models ke neeche ye add karo ya unhe replace kar do
+class DocumentVerifyRequest(BaseModel):
+    document_id: str
+    expected_hash: Optional[str] = None # Agar bank ke paas original hash hai
+
+class DocumentVerifyResponse(BaseModel):
+    is_tampered: bool
+    confidence_score: float # 0 to 100
+    detected_anomalies: List[str] # ["Font mismatch", "Software: Adobe Photoshop"]
+    metadata_summary: dict
+    verdict: str # "GENUINE", "SUSPICIOUS", "FORGED"

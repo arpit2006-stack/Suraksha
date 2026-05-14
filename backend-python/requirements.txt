@@ -8,3 +8,5 @@ scikit-learn
 pandas
 numpy
 python-multipart
+# Ya toh manual add kar de ya ye command chala:
+pip freeze > requirements.txt
