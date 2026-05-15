@@ -22,7 +22,7 @@ class BBAResponse(BaseModel):
 # --- SECURITY: UNIVERSAL URL SCANNER ---
 class URLScanRequest(BaseModel):
     url: str
-    user_id: str
+    user_id: Optional[str] = None  # Optional — frontend may not always send this
 
 class URLScanResponse(BaseModel):
     detected_brand: str
@@ -34,12 +34,17 @@ class URLScanResponse(BaseModel):
 # --- THEME 2: PRIVACY & MASKING ---
 class DataMaskingRequest(BaseModel):
     raw_data: str
-    purpose: str
+    purpose: Optional[str] = "General"  # Optional with default
     masking_level: str = "Standard"
+
+class EntityCount(BaseModel):
+    type: str
+    count: int
 
 class DataMaskingResponse(BaseModel):
     masked_data: str
-    entities_hidden: List[str]
+    entities_hidden: List[str]   # kept for backward compat
+    entities_found: List[EntityCount] = []  # required by frontend
     audit_id: str
 
 # --- COMPLIANCE: PDF AUDITOR ---
@@ -55,14 +60,20 @@ class PDFComplianceResponse(BaseModel):
     analysis: List[ComplianceTask]
     compliance_score: int
 
-# Purane BBA models ke neeche ye add karo ya unhe replace kar do
-class DocumentVerifyRequest(BaseModel):
-    document_id: str
-    expected_hash: Optional[str] = None # Agar bank ke paas original hash hai
+# --- DOCUMENT FORENSICS (matches frontend DocumentVerifier.jsx) ---
+class AnomalyItem(BaseModel):
+    type: str
+    detail: str
+    severity: str  # 'high', 'medium', 'low'
+
+class HashVerification(BaseModel):
+    sha256: str
+    md5: str
+    is_valid: bool
 
 class DocumentVerifyResponse(BaseModel):
-    is_tampered: bool
-    confidence_score: float # 0 to 100
-    detected_anomalies: List[str] # ["Font mismatch", "Software: Adobe Photoshop"]
-    metadata_summary: dict
-    verdict: str # "GENUINE", "SUSPICIOUS", "FORGED"
+    status: str            # "GENUINE", "SUSPICIOUS", "FORGED"
+    confidence: float      # 0 to 100
+    anomalies: List[AnomalyItem]
+    hash_verification: HashVerification
+    metadata: dict

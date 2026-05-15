@@ -1,19 +1,31 @@
-import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from './assets/vite.svg'
-// import heroImg from './assets/hero.png'
-// import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AppProvider } from './context/AppContext';
+import Navbar from './components/Navbar';
+import GuardianAlert from './components/GuardianAlert';
 import SentinelDashboard from './components/homepage';
+import DocumentVerifier from './components/DocumentVerifier';
+import DataMasker from './components/DataMasker';
+import UrlScanner from './components/UrlScanner';
+import ComplianceDashboard from './components/ComplianceDashboard';
 
-function App() {
- // const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      {/* //HOME PAGE */}
-      <SentinelDashboard />
-    </>
-  )
+    <AppProvider>
+      <BrowserRouter>
+        <div className="app-shell">
+          <Navbar />
+          <main className="app-main">
+            <Routes>
+              <Route path="/"                 element={<SentinelDashboard />} />
+              <Route path="/document-verify"  element={<DocumentVerifier />} />
+              <Route path="/data-masker"      element={<DataMasker />} />
+              <Route path="/url-scanner"      element={<UrlScanner />} />
+              <Route path="/compliance"       element={<ComplianceDashboard />} />
+            </Routes>
+          </main>
+        </div>
+        <GuardianAlert />
+      </BrowserRouter>
+    </AppProvider>
+  );
 }
-
-export default App
