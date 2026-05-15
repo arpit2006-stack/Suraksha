@@ -27,7 +27,7 @@ app.add_middleware(
 
 # Register routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
-app.include_router(security.router, prefix="/api/v1/security", tags=["Security & Privacy"])
+app.include_router(security.router, prefix="/api/v1/security", tags=["Security"])
 
 # Root health check endpoint
 @app.get("/")

@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, AlertTriangle, CheckCircle, XCircle, Globe } from 'lucide-react';
+import { Search, AlertTriangle, CheckCircle, XCircle, Globe, ShieldCheck } from 'lucide-react';
 import api from '../api/axios';
-import { mockScanUrl } from '../api/mockData';
 import { useApp } from '../context/AppContext';
 
-// SVG Gauge Chart
+// SVG Gauge Chart Component
 function GaugeChart({ score }) {
   const clamp = Math.min(100, Math.max(0, score));
   const radius = 80;
@@ -30,26 +29,15 @@ function GaugeChart({ score }) {
   return (
     <div className="gauge-wrapper">
       <svg viewBox="0 0 200 120" className="gauge-svg">
-        {/* Background arc */}
         <path d={arcPath(-180, 0, radius)} fill="none" stroke="#E8EAED" strokeWidth="18" strokeLinecap="round" />
-        {/* Safe zone */}
         <path d={arcPath(-180, -180 + (30 / 100) * 180, radius)} fill="none" stroke="#34A853" strokeWidth="18" strokeOpacity="0.4" />
-        {/* Warning zone */}
         <path d={arcPath(-180 + (30/100)*180, -180 + (70/100)*180, radius)} fill="none" stroke="#FBBC04" strokeWidth="18" strokeOpacity="0.4" />
-        {/* Danger zone */}
         <path d={arcPath(-180 + (70/100)*180, 0, radius)} fill="none" stroke="#EA4335" strokeWidth="18" strokeOpacity="0.4" />
-        {/* Active arc */}
         <path d={arcPath(-180, needleAngle, radius)} fill="none" stroke={color} strokeWidth="18" strokeLinecap="round" />
-        {/* Needle */}
         <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#202124" strokeWidth="3" strokeLinecap="round" />
         <circle cx={cx} cy={cy} r="6" fill="#202124" />
-        {/* Score text */}
         <text x={cx} y={cy - 20} textAnchor="middle" fontSize="28" fontWeight="700" fill={color}>{clamp}</text>
         <text x={cx} y={cy - 6} textAnchor="middle" fontSize="10" fill="#5F6368">RISK SCORE</text>
-        {/* Labels */}
-        <text x="22" y="112" fontSize="9" fill="#34A853">Safe</text>
-        <text x="87" y="112" fontSize="9" fill="#FBBC04">Warning</text>
-        <text x="158" y="112" fontSize="9" fill="#EA4335">Danger</text>
       </svg>
       <div className="gauge-label" style={{ color }}>{riskLabel}</div>
     </div>
@@ -73,52 +61,57 @@ export default function UrlScanner() {
     setLoading(true);
     setResult(null);
     try {
+      // Backend Call
       const { data } = await api.post('/security/scan-url', { url });
       setResult(data);
-      if (data.threat_score > 70) triggerGuardianAlert(`Khatranaak URL detect hua! Score: ${data.threat_score}/100. "${url}" kholen mat.`);
-    } catch {
-      const mock = mockScanUrl(87);
-      setResult(mock);
-      triggerGuardianAlert(`Khatranaak URL detect hua! Score: 87/100`);
+      
+      if (data.threat_score > 70) {
+        triggerGuardianAlert(`Danger! Phishing detected at ${url}. Threat Score: ${data.threat_score}/100.`);
+      }
+    } catch (err) {
+      console.error("Scan Error:", err);
+      // Fallback message
+      triggerGuardianAlert(`Error connecting to AI Radar. Please check backend.`);
     } finally {
       setLoading(false);
     }
   };
 
-  // Backend returns "High"/"Low"; riskConfig uses "Dangerous"/"Warning"/"Safe"
+  // Maps backend strings to frontend config keys
   const normalizeRisk = (level, score) => {
     if (!level) return score > 70 ? 'Dangerous' : score > 30 ? 'Warning' : 'Safe';
     const l = level.toLowerCase();
-    if (l === 'high' || l === 'dangerous') return 'Dangerous';
-    if (l === 'medium' || l === 'warning') return 'Warning';
+    if (l.includes('high') || l.includes('dangerous')) return 'Dangerous';
+    if (l.includes('low') || l.includes('medium') || l.includes('warning')) return 'Warning';
     return 'Safe';
   };
 
-  const cfg = result ? riskConfig[normalizeRisk(result.risk_level, result.threat_score)] : null;
+  const currentRisk = result ? normalizeRisk(result.risk_level, result.threat_score) : 'Safe';
+  const cfg = riskConfig[currentRisk];
 
   return (
     <div className="page-container">
       <div className="page-header">
         <h1 className="page-title">Phishing Radar — URL Scanner</h1>
         <p className="page-subtitle">
-          Kisi bhi URL ka real-time AI analysis karein. Gemini AI phishing, spoofing aur financial fraud patterns detect karta hai.
+          Real-time AI analysis of URLs. Gemini 2.5 detects patterns of financial fraud and brand spoofing.
         </p>
       </div>
 
-      {/* Search Bar */}
+      {/* Search Input Area */}
       <div className="card search-card">
         <div className="search-bar">
           <Globe size={20} className="search-icon" />
           <input
             type="url"
             className="search-input"
-            placeholder="URL enter karein — jaise https://hdfc-secure-login.ru/auth"
+            placeholder="URL enter karein (e.g., https://bank.sbi or hdfc-net.com)"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && scan()}
           />
           <button className="btn btn--primary search-btn" onClick={scan} disabled={loading || !url.trim()}>
-            {loading ? <span className="loading-row"><span className="spinner" /> Scanning...</span> : <><Search size={16} /> Scan URL</>}
+            {loading ? <span className="loading-row"><span className="spinner" /> Analyzing...</span> : <><Search size={16} /> Scan URL</>}
           </button>
         </div>
       </div>
@@ -131,47 +124,67 @@ export default function UrlScanner() {
             exit={{ opacity: 0 }}
             className="scanner-result-layout"
           >
-            {/* Gauge */}
+            {/* Left Column: Gauge and Data */}
             <div className="card gauge-card">
-              <GaugeChart score={result.threat_score} />
+              <GaugeChart score={result.threat_score || 0} />
+              
               <div className="gauge-meta">
                 <div className="gauge-meta__row">
                   <span>Detected Brand</span>
-                  <strong>{result.detected_brand}</strong>
+                  <strong>{result.detected_brand || "Generic / None"}</strong>
                 </div>
                 <div className="gauge-meta__row">
                   <span>Risk Level</span>
                   <span className={`badge ${cfg.badgeClass}`}>{result.risk_level}</span>
                 </div>
+                
+                {/* SAFE CHECK for .map() crash */}
                 <div className="gauge-meta__row">
                   <span>Threats</span>
                   <div className="threat-tags">
-                    {result.threat_types.map((t) => (
-                      <span key={t} className="badge badge--danger badge--xs">{t}</span>
-                    ))}
+                    {result.threat_types?.length > 0 ? (
+                      result.threat_types.map((t, idx) => (
+                        <span key={idx} className="badge badge--danger badge--xs">{t}</span>
+                      ))
+                    ) : (
+                      <span className="text-muted text-xs">No specific threats</span>
+                    )}
                   </div>
                 </div>
-                {result.domain_info && (
-                  <>
-                    <div className="gauge-meta__row"><span>Registrar</span><span>{result.domain_info.registrar}</span></div>
-                    <div className="gauge-meta__row"><span>Country</span><span>{result.domain_info.country}</span></div>
-                    <div className="gauge-meta__row"><span>Registered</span><span>{result.domain_info.created}</span></div>
-                  </>
-                )}
+
+                {/* Domain Information Section */}
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                   <div className="gauge-meta__row">
+                     <span>Registrar</span>
+                     <span>{result.registrar || "N/A"}</span>
+                   </div>
+                   <div className="gauge-meta__row">
+                     <span>Country</span>
+                     <span>{result.country || "N/A"}</span>
+                   </div>
+                   <div className="gauge-meta__row">
+                     <span>Registered Date</span>
+                     <span>{result.registered || "N/A"}</span>
+                   </div>
+                </div>
               </div>
             </div>
 
-            {/* AI Reasoning */}
+            {/* Right Column: AI Reasoning */}
             <div className="card reasoning-card">
               <div className="card__header">
-                <span>🤖</span>
-                <span>Gemini AI Analysis</span>
+                <ShieldCheck size={18} className="text-blue-500" />
+                <span>Gemini 2.5 Security Report</span>
               </div>
-              <p className="reasoning-text">{result.reasoning}</p>
+              <div className="reasoning-body">
+                <p className="reasoning-text">
+                  {result.reasoning || "AI analysis is unavailable. Pattern suggests standard behavior."}
+                </p>
+              </div>
               <div className="reasoning-footer">
                 <cfg.icon size={16} color={cfg.color} />
-                <span style={{ color: cfg.color }}>
-                  Verdict: {result.risk_level.toUpperCase()} — Threat Score {result.threat_score}/100
+                <span style={{ color: cfg.color }} className="font-bold">
+                  Verdict: {result.risk_level?.toUpperCase()} — Threat Score {result.threat_score}/100
                 </span>
               </div>
             </div>

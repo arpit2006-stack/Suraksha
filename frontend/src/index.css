@@ -494,7 +494,6 @@ body {
 
 .threat-tags { display: flex; gap: 4px; flex-wrap: wrap; }
 
-.reasoning-card { }
 .reasoning-text {
   font-size: 15px;
   color: var(--text-primary);
