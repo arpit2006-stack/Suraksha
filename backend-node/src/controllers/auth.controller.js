@@ -1,5 +1,6 @@
 import { User } from '../models/signup.model.js';
 import { sendOtpEmail } from '../lib/email.js';
+import jwt from 'jsonwebtoken';
 
 // 1. SIGNUP CONTROLLER
 export const signup = async (req, res) => {
@@ -81,24 +82,34 @@ export const verifyOtp = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ message: "User nahi mila!" });
 
-        // Check if OTP exists and matches
         if (!user.otp || user.otp !== otp) {
             return res.status(400).json({ message: "Galat OTP hai bhai!" });
         }
 
-        // Check Expiry
         if (new Date() > user.otpExpires) {
             return res.status(400).json({ message: "OTP expire ho gaya!" });
         }
 
-        // Clear OTP fields after successful verification
         user.otp = undefined;
         user.otpExpires = undefined;
         await user.save();
 
+        // Generate JWT Token
+        const token = jwt.sign(
+            { id: user._id, email: user.email }, 
+            process.env.JWT_SECRET || 'fallback_secret', 
+            { expiresIn: '1d' }
+        );
+
         res.status(200).json({
             success: true,
-            message: "🎉 Authentication Successful! SuRaksha Dashboard open."
+            message: "🎉 Authentication Successful! SuRaksha Dashboard open.",
+            token,
+            user: {
+                id: user._id,
+                email: user.email,
+                fullName: user.fullName
+            }
         });
 
     } catch (error) {

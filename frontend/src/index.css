@@ -35,7 +35,8 @@
 }
 
 /* Family Mode overrides */
-body.family-mode {
+html.family-mode {
+  font-size: 18px; /* Scales all rem units */
   --font-size-base: 18px;
   --text-primary:   #000000;
   --text-secondary: #2d2d2d;
@@ -523,6 +524,12 @@ body {
 .compliance-toolbar { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
 
 .table-card { padding: 0; overflow: hidden; }
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
 .compliance-table {
   width: 100%;
