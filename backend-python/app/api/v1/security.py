@@ -47,9 +47,15 @@ async def scan_url_endpoint(request: URLScanRequest):
         if "Request Rejected" in recon_data["title"] or "403" in recon_data["title"]:
             # Agar domain legit hai (.bank.in) toh use block maano, phishing nahi
             if ".bank.in" in request.url or ".bank" in request.url:
-                risk = "Safe"
-                score = 15
-                reason = "Site returned 'Request Rejected'. This is a common bot-protection response from legitimate bank firewalls."   
+                return {
+                    "status": "success",
+                    "detected_brand": "Verified Bank",
+                    "risk_level": "Safe",
+                    "threat_score": 15,
+                    "reasoning": "Site returned 'Request Rejected'. This is a common bot-protection response from legitimate bank firewalls.",
+                    "threat_types": [],
+                    "ghost_recon": recon_data
+                }
 
         # --- AI ANALYSIS ---
         raw_result = await ai_engine.scan_url_with_ghost_intelligence(request.url, recon_data)
@@ -95,13 +101,13 @@ def _mask_pii(text: str) -> tuple[str, list[EntityCount]]:
             counts[label] = counts.get(label, 0) + len(found)
             masked = re.sub(pattern, repl, masked)
 
-    sub(r"\b\d{10,16}\b", "Bank Account Number", "[MASKED_ACC_NO]")
-    sub(r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b", "Card Number", "[MASKED_CARD]")
-    sub(r"\b[A-Z]{4}0[A-Z0-9]{6}\b", "IFSC", "[MASKED_IFSC]")
-    sub(r"\b[6-9]\d{9}\b", "Phone Number", "[MASKED_PHONE]")
     sub(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", "Email Address", "[MASKED_EMAIL]")
-    sub(r"\b\d{12}\b", "Aadhaar", "[MASKED_AADHAAR]")
+    sub(r"\b[A-Z]{4}0[A-Z0-9]{6}\b", "IFSC", "[MASKED_IFSC]")
     sub(r"\b[A-Z]{5}\d{4}[A-Z]\b", "PAN", "[MASKED_PAN]")
+    sub(r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b", "Card Number", "[MASKED_CARD]")
+    sub(r"\b\d{12}\b", "Aadhaar", "[MASKED_AADHAAR]")
+    sub(r"\b[6-9]\d{9}\b", "Phone Number", "[MASKED_PHONE]")
+    sub(r"\b\d{10,16}\b", "Bank Account Number", "[MASKED_ACC_NO]")
 
     entities = [EntityCount(type=k, count=v) for k, v in counts.items()]
     return masked, entities

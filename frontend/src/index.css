@@ -575,6 +575,9 @@ body {
   max-width: 600px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .compliance-modal__header {
@@ -588,7 +591,11 @@ body {
 
 .compliance-modal__title { font-size: 16px; font-weight: 700; margin-top: 6px; color: var(--text-primary); }
 
-.compliance-modal__body { padding: 20px 24px; }
+.compliance-modal__body { 
+  padding: 20px 24px; 
+  overflow-y: auto;
+  flex: 1;
+}
 .compliance-modal__label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 14px; }
 
 .action-points { list-style: none; display: flex; flex-direction: column; gap: 12px; }
