@@ -2,27 +2,26 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    dob: { type: String, required: true }, // Format: YYYY-MM-DD
+    email: { type: String, required: true, unique: true, lowercase: true },
+    dob: { type: String, required: true },
     
     // Banking Details
     accountNo: { type: String, required: true },
     ifscCode: { type: String, required: true },
     branchName: { type: String, required: true },
     
-    // Identity Details (Forbidden IDs - Only Schema names used)
-    aadhaarNumber: { type: String, required: true }, // Verification ke liye
+    // Identity Details (Masked on Frontend later)
+    aadhaarNumber: { type: String, required: true },
     panCardNo: { type: String, required: true },
     
-    // Security Status
-    isVerified: { type: Boolean, default: false },
+    // Security & IP Tracking
+    registrationIp: { type: String, required: true },
+    lastLoginIp: { type: String },
+    isVerified: { type: Boolean, default: false }, // Python engine pass karne par true hoga
     trustScore: { type: Number, default: 0 },
-    
-    // Forensics Result (Python Backend se aayega)
-    forensicsReport: {
-        status: { type: String, enum: ['PENDING', 'SUCCESS', 'FAILED'], default: 'PENDING' },
-        anomalies: [String]
-    }
+
+    otp: { type: String },
+    otpExpires: { type: Date }
 }, { timestamps: true });
 
 export const User = mongoose.model('User', userSchema);
