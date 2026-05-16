@@ -37,6 +37,15 @@ export const maskData = (rawText) => api.post('/security/mask-data', { raw_data:
 // Phishing URL Scanner
 export const scanUrl = (url) => api.post('/security/scan-url', { url: url });
 
+// Document tampering & forgery scanner
+export const scanDocument = (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return api.post('/security/scan-document', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
 
 // --- INTERCEPTORS (Phase 5: Elderly/Family Mode) ---
 

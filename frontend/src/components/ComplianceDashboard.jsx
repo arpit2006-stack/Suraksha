@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, X, CheckCheck, ChevronRight, AlertCircle } from 'lucide-react';
 import api, { analyzeRegulatoryCircular } from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 const priorityConfig = {
   critical: { class: 'badge--danger',  label: 'Critical' },
@@ -16,6 +17,7 @@ const statusConfig = {
 };
 
 export default function ComplianceDashboard() {
+  const { user } = useAuth();
   const [loading, setLoading]         = useState(false);
   const [circulars, setCirculars]     = useState(null);
   const [modal, setModal]             = useState(null); 
@@ -82,7 +84,7 @@ export default function ComplianceDashboard() {
       title: modal.title,
       action: 'APPROVED & POLICY APPLIED',
       timestamp: new Date().toLocaleString('en-IN'),
-      user: 'Aditya (Admin)', // Tera naam as Admin
+      user: user?.name || 'System',
     };
     setAuditLog((prev) => [entry, ...prev]);
     setCirculars((prev) =>

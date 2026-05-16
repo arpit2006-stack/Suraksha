@@ -7,7 +7,17 @@ export function AppProvider({ children }) {
     return localStorage.getItem('familyMode') === 'true';
   });
 
+  const [lang, setLang] = useState(() => localStorage.getItem('suraksha_lang') || 'en');
+
   const [guardianAlert, setGuardianAlert] = useState(null); // { message, riskLevel }
+
+  const toggleLang = () => {
+    setLang((prev) => {
+      const next = prev === 'en' ? 'hi' : 'en';
+      localStorage.setItem('suraksha_lang', next);
+      return next;
+    });
+  };
 
   const toggleFamilyMode = () => {
     setFamilyMode((prev) => {
@@ -36,7 +46,15 @@ export function AppProvider({ children }) {
 
   return (
     <AppContext.Provider
-      value={{ familyMode, toggleFamilyMode, guardianAlert, triggerGuardianAlert, dismissGuardianAlert }}
+      value={{
+        familyMode,
+        toggleFamilyMode,
+        lang,
+        toggleLang,
+        guardianAlert,
+        triggerGuardianAlert,
+        dismissGuardianAlert,
+      }}
     >
       {children}
     </AppContext.Provider>

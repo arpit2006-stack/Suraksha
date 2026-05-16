@@ -1,31 +1,43 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
-import Navbar from './components/Navbar';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import DashboardLayout from './components/dashboard/DashboardLayout';
+import WelcomePage from './pages/WelcomePage';
+import LoginPage from './pages/LoginPage';
+import UnderwriterDashboard from './pages/UnderwriterDashboard';
+import CustomerDashboardStub from './pages/CustomerDashboardStub';
+import BypassPage from './pages/BypassPage';
 import GuardianAlert from './components/GuardianAlert';
-import SentinelDashboard from './components/homepage';
-import DocumentVerifier from './components/DocumentVerifier';
-import DataMasker from './components/DataMasker';
-import UrlScanner from './components/UrlScanner';
-import ComplianceDashboard from './components/ComplianceDashboard';
 
 export default function App() {
   return (
-    <AppProvider>
-      <BrowserRouter>
-        <div className="app-shell">
-          <Navbar />
-          <main className="app-main">
-            <Routes>
-              <Route path="/"                 element={<SentinelDashboard />} />
-              <Route path="/document-verify"  element={<DocumentVerifier />} />
-              <Route path="/data-masker"      element={<DataMasker />} />
-              <Route path="/url-scanner"      element={<UrlScanner />} />
-              <Route path="/compliance"       element={<ComplianceDashboard />} />
-            </Routes>
-          </main>
-        </div>
-        <GuardianAlert />
-      </BrowserRouter>
-    </AppProvider>
+    <AuthProvider>
+      <AppProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<WelcomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/bypass/:code" element={<BypassPage />} />
+            <Route path="/bypass" element={<BypassPage />} />
+            <Route path="/customer" element={<CustomerDashboardStub />} />
+
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute requireInternal>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<UnderwriterDashboard />} />
+            </Route>
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <GuardianAlert />
+        </BrowserRouter>
+      </AppProvider>
+    </AuthProvider>
   );
 }

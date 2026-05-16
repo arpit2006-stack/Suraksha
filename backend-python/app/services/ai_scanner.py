@@ -5,48 +5,57 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-_api_key = os.getenv("GOOGLE_API_KEY")
-
 class AISecurityEngine:
     def __init__(self):
         self.llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",
-            google_api_key=_api_key,
-            temperature=0.1,  # Strict analysis
-            max_retries=3,
+            google_api_key=os.getenv("GOOGLE_API_KEY"),
+            temperature=0.1
         )
 
-    async def scan_url(self, url: str) -> str:
-        """Analyzes URL for phishing with banking context."""
+    async def scan_url_with_ghost_intelligence(self, url: str, metadata: dict) -> str:
+        """
+        Ghost Intelligence Engine:
+        Analyzes URL + Live Signals (Title, SSL, Reputation).
+        """
         prompt = PromptTemplate.from_template(
             """
-            Analyze this URL for financial phishing: {url}
+            Role: Ghost AI Security Agent
+            Task: Analyze if this URL is a phishing attempt using Live Recon Signals.
             
-            CONTEXT:
-            - Official Indian banks use '.bank.in', '.bank', or '.co.in'.
-            - HDFC Bank official: 'hdfc.bank.in'.
-            - SBI official: 'sbi.co.in' or 'bank.sbi'.
-            - Flag as SAFE if it's official. Flag as DANGEROUS if it's a spoof (e.g., hdfc-net-login.com).
+            URL: {url}
+            Live Site Title: {title}
+            SSL Identity: {ssl}
+            Server Context: {country}
 
-            OUTPUT FORMAT (Strict):
-            Brand Name | Risk Level (Safe/Low/High/Dangerous) | Brief Reason
+            LOGIC:
+            1. Compare the 'Live Site Title' with the 'URL Domain'. 
+            2. Legitimate banks (like PNB, ICICI) often use .com for legacy. If the Title matches the Brand and the SSL is from a global authority, mark as SAFE.
+            3. If the Title says 'HDFC Bank' but the URL is 'secure-hdfc.xyz', flag as DANGEROUS.
+            4. Look for 'punycode' or 'homograph' attacks (e.g., using 'rn' instead of 'm').
+            5. If the Site Title is 'Request Rejected', 'Access Denied', or '403 Forbidden', it means the bank's firewall blocked our bot. 
+            In this case, do NOT flag it as 'Dangerous' based on title mismatch alone. 
+            Check the SSL and TLD. If the URL is '.bank.in' and SSL is valid, mark as SAFE but mention 'Bot Blocked' in reasoning.
+
+            Output Format:
+            Brand Name | Risk Level (Safe/Warning/Dangerous) | Ghost Reasoning (Max 2 lines)
             """
         )
         chain = prompt | self.llm
         try:
-            response = await chain.ainvoke({"url": url})
+            response = await chain.ainvoke({
+                "url": url, 
+                "title": metadata.get('title', 'Unknown'),
+                "ssl": metadata.get('ssl', 'GlobalSign/Digicert'),
+                "country": metadata.get('country', 'India')
+            })
             return response.content
         except Exception as e:
             return f"Unknown | Error | {str(e)}"
 
     async def mask_sensitive_data(self, text: str) -> str:
-        """Masks Aadhaar, PAN, and Bank details."""
-        prompt = PromptTemplate.from_template(
-            "Identify and mask PII (Aadhaar, PAN, Account Numbers) in this text: {text}. "
-            "Replace digits with [MASKED]. Provide the masked text and a list of hidden entities."
-        )
-        chain = prompt | self.llm
-        response = await chain.ainvoke({"text": text})
+        prompt = PromptTemplate.from_template("Mask PII digits in: {text}. Return masked version.")
+        response = await self.llm.ainvoke(prompt)
         return response.content
 
 ai_engine = AISecurityEngine()

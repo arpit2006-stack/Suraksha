@@ -24,6 +24,7 @@ export const mockDocumentVerify = (status = 'FORGED') => ({
 });
 
 export const mockMaskData = (raw) => ({
+  audit_id: `AUD-MOCK-${Date.now().toString(36).toUpperCase()}`,
   masked_data: raw
     .replace(/\b\d{10,16}\b/g, '[MASKED_ACC_NO]')
     .replace(/\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g, '[MASKED_CARD]')
