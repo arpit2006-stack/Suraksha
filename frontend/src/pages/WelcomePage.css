@@ -27,8 +27,12 @@
 .welcome-landing *::before,
 .welcome-landing *::after {
   box-sizing: border-box;
+}
+
+.welcome-landing :where(
+  h1, h2, h3, h4, p, ul, ol, figure, blockquote
+) {
   margin: 0;
-  padding: 0;
 }
 
 .welcome-landing ::-webkit-scrollbar {
@@ -214,6 +218,7 @@
   opacity: 0.05;
   background-image: radial-gradient(var(--white) 1px, transparent 1px);
   background-size: 40px 40px;
+  pointer-events: none;
 }
 .welcome-landing .hero-content {
   position: relative;
@@ -305,6 +310,9 @@
   background: rgba(255, 255, 255, 0.1);
   color: white;
 }
+.welcome-landing .hero-cta .btn-hero-outline {
+  cursor: pointer;
+}
 
 /* ─── FEATURES ─── */
 .welcome-landing .features {
@@ -331,13 +339,17 @@
   font-weight: 800;
 }
 .welcome-landing .feat-grid {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 24px;
+  align-items: stretch;
 }
 .welcome-landing .feat-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: white;
   padding: 2.5rem;
   border-radius: 16px;
@@ -370,6 +382,17 @@
   font-size: 14px;
   color: var(--muted);
   line-height: 1.7;
+  flex: 1;
+}
+
+/* Center lone card on last row when 7 modules (3+3+1) */
+@media (min-width: 900px) {
+  .welcome-landing .feat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .welcome-landing .feat-card:last-child:nth-child(3n + 1) {
+    grid-column: 2;
+  }
 }
 
 /* ─── FOOTER ─── */
@@ -411,6 +434,10 @@
 }
 .welcome-landing .footer-brand-block .brand-sukrasha {
   font-size: 24px;
+  color: var(--white);
+}
+.welcome-landing .footer .brand-bank {
+  color: var(--yellow);
 }
 .welcome-landing .footer-tagline {
   color: rgba(255, 255, 255, 0.4);
@@ -430,5 +457,61 @@
   }
   .welcome-landing .welcome-navbar {
     padding: 0 1rem;
+    height: auto;
+    min-height: 72px;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  .welcome-landing .welcome-nav-left {
+    flex: 1;
+    min-width: 0;
+  }
+  .welcome-landing .welcome-nav-right {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .welcome-landing .btn-nav-login,
+  .welcome-landing .btn-nav-signup {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+  .welcome-landing .hero {
+    padding-top: 7.5rem;
+    min-height: auto;
+    padding-bottom: 3rem;
+  }
+  .welcome-landing .hero-title {
+    font-size: clamp(32px, 8vw, 48px);
+  }
+  .welcome-landing .hero-sub {
+    font-size: 16px;
+  }
+  .welcome-landing .btn-primary,
+  .welcome-landing .btn-hero-outline {
+    padding: 14px 24px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 320px;
+  }
+  .welcome-landing .hero-cta {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+  .welcome-landing .section-title {
+    font-size: 28px;
+  }
+  .welcome-landing .features {
+    padding: 3rem 1rem;
+  }
+  .welcome-landing .feat-card {
+    padding: 1.75rem;
+  }
+  .welcome-landing .feat-card:last-child:nth-child(3n + 1) {
+    grid-column: auto;
   }
 }

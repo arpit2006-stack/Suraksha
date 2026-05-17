@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { Shield } from 'lucide-react';
 import { useAuth, INTERNAL_ROLES } from '../context/AuthContext';
 
 export default function LoginPage() {
-  const { login, loading, isAuthenticated, isInternalEmployee } = useAuth();
+  const { login, logout, loading, isAuthenticated, isInternalEmployee } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/dashboard';
@@ -23,9 +23,11 @@ export default function LoginPage() {
     );
   }
 
-  if (isAuthenticated && isInternalEmployee) {
-    return <Navigate to="/dashboard" replace />;
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      logout();
+    }
+  }, [isAuthenticated, logout]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
