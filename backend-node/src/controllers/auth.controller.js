@@ -83,17 +83,14 @@ export const verifyOtp = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ message: "User nahi mila!" });
 
-        // OTP Match Check
         if (!user.otp || user.otp !== otp) {
             return res.status(400).json({ message: "Galat OTP hai bhai!" });
         }
 
-        // Expiry Check
         if (new Date() > user.otpExpires) {
             return res.status(400).json({ message: "OTP expire ho gaya!" });
         }
 
-        // OTP sahi hai -> DB se clear karo
         user.otp = undefined;
         user.otpExpires = undefined;
         await user.save();

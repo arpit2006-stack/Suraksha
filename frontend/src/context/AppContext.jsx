@@ -1,15 +1,34 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { authApi } from '../api/axios';
 
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
-  const [familyMode, setFamilyMode] = useState(() => {
-    return localStorage.getItem('familyMode') === 'true';
-  });
-
+  const [familyMode, setFamilyMode] = useState(() => localStorage.getItem('familyMode') === 'true');
   const [lang, setLang] = useState(() => localStorage.getItem('suraksha_lang') || 'en');
+  const [guardianAlert, setGuardianAlert] = useState(null);
+  
+  // Global Auth State
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem('token'));
 
-  const [guardianAlert, setGuardianAlert] = useState(null); // { message, riskLevel }
+  // Authentication Methods
+  const login = (token, userData) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setIsAuthenticated(false);
+  };
 
   const toggleLang = () => {
     setLang((prev) => {
@@ -35,25 +54,21 @@ export function AppProvider({ children }) {
 
   const dismissGuardianAlert = () => setGuardianAlert(null);
 
-  // Apply/remove family-mode class on body
   useEffect(() => {
     if (familyMode) {
-      document.body.classList.add('family-mode');
+      document.documentElement.classList.add('family-mode');
     } else {
-      document.body.classList.remove('family-mode');
+      document.documentElement.classList.remove('family-mode');
     }
   }, [familyMode]);
 
   return (
     <AppContext.Provider
       value={{
-        familyMode,
-        toggleFamilyMode,
-        lang,
-        toggleLang,
-        guardianAlert,
-        triggerGuardianAlert,
-        dismissGuardianAlert,
+        familyMode, toggleFamilyMode,
+        lang, toggleLang,
+        guardianAlert, triggerGuardianAlert, dismissGuardianAlert,
+        user, isAuthenticated, login, logout
       }}
     >
       {children}

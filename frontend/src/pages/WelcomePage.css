@@ -1,0 +1,517 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+.welcome-landing {
+  --blue: #00579c;
+  --blue-dark: #004175;
+  --blue-deep: #002b4d;
+  --yellow: #ffcc00;
+  --yellow-hover: #ffdb4d;
+  --white: #ffffff;
+  --off: #f8fafc;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: rgba(0, 87, 156, 0.1);
+  --border2: rgba(0, 87, 156, 0.2);
+
+  box-sizing: border-box;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--white);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+.welcome-landing *,
+.welcome-landing *::before,
+.welcome-landing *::after {
+  box-sizing: border-box;
+}
+
+.welcome-landing :where(
+  h1, h2, h3, h4, p, ul, ol, figure, blockquote
+) {
+  margin: 0;
+}
+
+.welcome-landing ::-webkit-scrollbar {
+  width: 6px;
+}
+.welcome-landing ::-webkit-scrollbar-track {
+  background: var(--off);
+}
+.welcome-landing ::-webkit-scrollbar-thumb {
+  background: var(--blue);
+  border-radius: 10px;
+}
+
+@keyframes welcome-fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes welcome-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ─── NAVBAR ─── */
+.welcome-landing .welcome-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: var(--blue);
+  border-bottom: 4px solid var(--yellow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 72px;
+}
+.welcome-landing .welcome-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.welcome-landing .header-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.welcome-landing .shield-box {
+  width: 42px;
+  height: 42px;
+  background: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.welcome-landing .brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.welcome-landing .brand-sukrasha {
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.welcome-landing .brand-bank {
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.welcome-landing .welcome-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 2rem;
+}
+.welcome-landing .nl {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.welcome-landing .nl:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+.welcome-landing .welcome-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.welcome-landing .btn-nav-login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 22px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  transition: all 0.2s;
+  text-decoration: none;
+  font-family: inherit;
+}
+.welcome-landing .btn-nav-login:hover {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+.welcome-landing .btn-nav-signup {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 22px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--yellow);
+  border: none;
+  color: var(--blue-deep);
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+  font-family: inherit;
+}
+.welcome-landing .btn-nav-signup:hover {
+  background: var(--yellow-hover);
+  transform: translateY(-1px);
+  color: var(--blue-deep);
+}
+
+.welcome-landing .welcome-nav-right a {
+  position: relative;
+  z-index: 201;
+}
+
+.welcome-landing .hero-cta a {
+  position: relative;
+  z-index: 3;
+}
+
+/* ─── HERO ─── */
+.welcome-landing .hero {
+  position: relative;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 2rem 5rem;
+  text-align: center;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--blue) 0%, var(--blue-dark) 100%);
+}
+.welcome-landing .hero-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: radial-gradient(var(--white) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+.welcome-landing .hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 850px;
+  animation: welcome-fadeIn 1s ease;
+}
+.welcome-landing .hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+.welcome-landing .hero-badge-icon {
+  color: var(--yellow);
+  flex-shrink: 0;
+}
+.welcome-landing .hero-title {
+  font-size: clamp(40px, 6vw, 68px);
+  color: var(--white);
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+.welcome-landing .hero-title span {
+  color: var(--yellow);
+}
+.welcome-landing .hero-sub {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+}
+.welcome-landing .hero-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.welcome-landing .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 40px;
+  border-radius: 8px;
+  background: var(--yellow);
+  border: none;
+  color: var(--blue-deep);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.22s;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  font-family: inherit;
+}
+.welcome-landing .btn-primary:hover {
+  transform: translateY(-2px);
+  background: var(--yellow-hover);
+  color: var(--blue-deep);
+}
+.welcome-landing .btn-hero-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 40px;
+  font-size: 16px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.welcome-landing .btn-hero-outline:hover {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+.welcome-landing .hero-cta .btn-hero-outline {
+  cursor: pointer;
+}
+
+/* ─── FEATURES ─── */
+.welcome-landing .features {
+  padding: 5rem 2rem;
+  background: var(--off);
+  scroll-margin-top: 72px;
+}
+.welcome-landing .section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+.welcome-landing .section-tag {
+  color: var(--blue);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  display: block;
+}
+.welcome-landing .section-title {
+  font-size: 36px;
+  color: var(--blue-deep);
+  font-weight: 800;
+}
+.welcome-landing .feat-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+.welcome-landing .feat-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.welcome-landing .feat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+  border-color: var(--yellow);
+}
+.welcome-landing .feat-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(0, 87, 156, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  color: var(--blue);
+}
+.welcome-landing .feat-h {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--blue-deep);
+}
+.welcome-landing .feat-p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+  flex: 1;
+}
+
+/* Center lone card on last row when 7 modules (3+3+1) */
+@media (min-width: 900px) {
+  .welcome-landing .feat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .welcome-landing .feat-card:last-child:nth-child(3n + 1) {
+    grid-column: 2;
+  }
+}
+
+/* ─── FOOTER ─── */
+.welcome-landing .footer {
+  background: var(--blue-deep);
+  color: white;
+  padding: 4rem 2rem 2rem;
+}
+.welcome-landing .footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.welcome-landing .footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+.welcome-landing .footer-col h4 {
+  color: var(--yellow);
+  margin-bottom: 1.5rem;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.welcome-landing .footer-col a {
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  margin-bottom: 10px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+.welcome-landing .footer-col a:hover {
+  color: var(--yellow);
+}
+.welcome-landing .footer-brand-block {
+  margin-bottom: 1.5rem;
+}
+.welcome-landing .footer-brand-block .brand-sukrasha {
+  font-size: 24px;
+  color: var(--white);
+}
+.welcome-landing .footer .brand-bank {
+  color: var(--yellow);
+}
+.welcome-landing .footer-tagline {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+}
+.welcome-landing .footer-copy {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 2rem;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+  .welcome-landing .welcome-nav-links {
+    display: none;
+  }
+  .welcome-landing .welcome-navbar {
+    padding: 0 1rem;
+    height: auto;
+    min-height: 72px;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  .welcome-landing .welcome-nav-left {
+    flex: 1;
+    min-width: 0;
+  }
+  .welcome-landing .welcome-nav-right {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .welcome-landing .btn-nav-login,
+  .welcome-landing .btn-nav-signup {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+  .welcome-landing .hero {
+    padding-top: 7.5rem;
+    min-height: auto;
+    padding-bottom: 3rem;
+  }
+  .welcome-landing .hero-title {
+    font-size: clamp(32px, 8vw, 48px);
+  }
+  .welcome-landing .hero-sub {
+    font-size: 16px;
+  }
+  .welcome-landing .btn-primary,
+  .welcome-landing .btn-hero-outline {
+    padding: 14px 24px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 320px;
+  }
+  .welcome-landing .hero-cta {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+  .welcome-landing .section-title {
+    font-size: 28px;
+  }
+  .welcome-landing .features {
+    padding: 3rem 1rem;
+  }
+  .welcome-landing .feat-card {
+    padding: 1.75rem;
+  }
+  .welcome-landing .feat-card:last-child:nth-child(3n + 1) {
+    grid-column: auto;
+  }
+}

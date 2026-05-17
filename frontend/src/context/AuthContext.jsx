@@ -62,12 +62,14 @@ export function AuthProvider({ children }) {
       loggedInAt: new Date().toISOString(),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    localStorage.setItem('token', `suraksha-${session.id}`);
     setUser(session);
     return session;
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('token');
     setUser(null);
   }, []);
 

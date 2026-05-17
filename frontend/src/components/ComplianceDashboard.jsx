@@ -122,42 +122,44 @@ export default function ComplianceDashboard() {
       {/* Circulars Table */}
       {circulars && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="card table-card">
-          <table className="compliance-table">
-            <thead>
-              <tr>
-                <th>Circular ID</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Source</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {circulars.map((c) => (
-                <tr key={c.id}>
-                  <td><code className="circular-id">{c.id}</code></td>
-                  <td className="circular-title">{c.title}</td>
-                  <td><span className="badge badge--info">{c.category}</span></td>
-                  <td><span className="text-muted text-xs">{c.source}</span></td>
-                  <td>
-                    <span className={`badge ${priorityConfig[c.priority]?.class || 'badge--info'}`}>
-                      {priorityConfig[c.priority]?.label || 'Standard'}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`badge ${statusConfig[c.status]?.class || 'badge--warning'}`}>{c.status}</span>
-                  </td>
-                  <td>
-                    <button className="btn btn--outline btn--xs" onClick={() => openModal(c)}>
-                      <ChevronRight size={13} /> Analyze
-                    </button>
-                  </td>
+          <div className="table-responsive">
+            <table className="compliance-table">
+              <thead>
+                <tr>
+                  <th>Circular ID</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Source</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {circulars.map((c) => (
+                  <tr key={c.id}>
+                    <td><code className="circular-id">{c.id}</code></td>
+                    <td className="circular-title">{c.title}</td>
+                    <td><span className="badge badge--info">{c.category}</span></td>
+                    <td><span className="text-muted text-xs">{c.source}</span></td>
+                    <td>
+                      <span className={`badge ${priorityConfig[c.priority]?.class || 'badge--info'}`}>
+                        {priorityConfig[c.priority]?.label || 'Standard'}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`badge ${statusConfig[c.status]?.class || 'badge--warning'}`}>{c.status}</span>
+                    </td>
+                    <td>
+                      <button className="btn btn--outline btn--xs" onClick={() => openModal(c)}>
+                        <ChevronRight size={13} /> Analyze
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </motion.div>
       )}
 

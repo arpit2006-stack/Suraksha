@@ -130,10 +130,10 @@ export default function UrlScanner() {
               
               {result.ghost_recon && (
                 <div className="ghost-signals-box mt-4 p-3 bg-black rounded border border-green-900 font-mono">
-                  <div className="text-[10px] text-green-400 mb-1 flex items-center gap-1">
+                  <div className="text-xs text-green-400 mb-1 flex items-center gap-1">
                     <Terminal size={10} /> RECON_DATA_FEED: ACTIVE
                   </div>
-                  <div className="text-[11px] text-green-500 leading-tight">
+                  <div className="text-sm text-green-500 leading-tight">
                     <div>&gt; [TITLE]: {result.ghost_recon.title}</div>
                     <div>&gt; [SSL]: {result.ghost_recon.ssl}</div>
                     <div>&gt; [GEO]: {result.ghost_recon.country}</div>
@@ -157,15 +157,15 @@ export default function UrlScanner() {
                   <div className="flex flex-wrap gap-2 mt-2">
                     {result.threat_types?.length > 0 ? (
                       result.threat_types.map((t, idx) => (
-                        <span key={idx} className="bg-red-50 text-red-600 text-[10px] px-2 py-1 rounded font-bold border border-red-100">
+                        <span key={idx} className="bg-red-50 text-red-600 text-xs px-2 py-1 rounded font-bold border border-red-100">
                           {t.toUpperCase()}
                         </span>
                       ))
-                    ) : <span className="text-xs text-gray-400 italic">None detected</span>}
+                    ) : <span className="text-sm text-gray-400 italic">None detected</span>}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t text-[11px]">
+                <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t text-sm">
                    <div><p className="text-gray-400">Registrar</p><p className="font-medium">{result.registrar || "N/A"}</p></div>
                    <div><p className="text-gray-400">Country</p><p className="font-medium">{result.country || "India"}</p></div>
                 </div>

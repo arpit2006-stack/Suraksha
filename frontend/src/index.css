@@ -35,7 +35,8 @@
 }
 
 /* Family Mode overrides */
-body.family-mode {
+html.family-mode {
+  font-size: 18px; /* Scales all rem units */
   --font-size-base: 18px;
   --text-primary:   #000000;
   --text-secondary: #2d2d2d;
@@ -524,6 +525,12 @@ body {
 
 .table-card { padding: 0; overflow: hidden; }
 
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .compliance-table {
   width: 100%;
   border-collapse: collapse;
@@ -575,6 +582,9 @@ body {
   max-width: 600px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .compliance-modal__header {
@@ -588,7 +598,11 @@ body {
 
 .compliance-modal__title { font-size: 16px; font-weight: 700; margin-top: 6px; color: var(--text-primary); }
 
-.compliance-modal__body { padding: 20px 24px; }
+.compliance-modal__body { 
+  padding: 20px 24px; 
+  overflow-y: auto;
+  flex: 1;
+}
 .compliance-modal__label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 14px; }
 
 .action-points { list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -935,6 +949,15 @@ body {
 .ghost-terminal__head { display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.35rem; color: #86efac; }
 .ghost-terminal__placeholder { font-style: italic; font-size: 0.7rem; }
 .ghost-terminal__body { margin: 0; white-space: pre-wrap; line-height: 1.5; }
+.ghost-terminal--loading { border-color: var(--accent); box-shadow: 0 0 12px rgba(0, 168, 89, 0.15); }
+.ghost-terminal__cursor {
+  display: inline-block;
+  color: var(--accent);
+  animation: ghost-blink 0.85s step-end infinite;
+}
+@keyframes ghost-blink {
+  50% { opacity: 0; }
+}
 
 .radar-score__value {
   font-size: clamp(2rem, 6vw, 2.75rem);

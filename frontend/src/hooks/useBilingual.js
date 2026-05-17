@@ -32,6 +32,8 @@ const COPY = {
   docDropTitle: { en: 'Drop PDF or image here', hi: 'PDF या छवि यहाँ छोड़ें' },
   docDropSub: { en: 'PDF recommended · JPG, PNG, WebP supported', hi: 'PDF अनुशंसित · JPG, PNG, WebP समर्थित' },
   docAnalyzing: { en: 'Analyzing document hashes…', hi: 'दस्तावेज़ हैश का विश्लेषण…' },
+  docScanning: { en: 'Scanning…', hi: 'स्कैन हो रहा है…' },
+  ghostScanning: { en: 'Ghost recon in progress…', hi: 'घोस्ट रिकॉन प्रगति पर…' },
   docScanBtn: { en: 'Run forensic scan', hi: 'फोरेंसिक स्कैन चलाएँ' },
   docCancel: { en: 'Cancel', hi: 'रद्द करें' },
   docInvalidType: { en: 'Only PDF and image files allowed', hi: 'केवल PDF और छवि फ़ाइलें' },

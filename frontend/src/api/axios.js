@@ -1,75 +1,61 @@
 import axios from 'axios';
 
-const api = axios.create({
+export const authApi = axios.create({
+  baseURL: 'http://localhost:5000/auth',
+  timeout: 30000,
+});
+
+export const securityApi = axios.create({
   baseURL: 'http://localhost:8000/api/v1',
   timeout: 30000,
 });
 
-// --- REGULATORY LOOP ENDPOINTS ---
-
-// 1. Fetch the list of circulars (Live + Local)
-export const fetchRegulatoryFeed = () => api.get('/security/fetch-circulars');
-
-// 2. Specific Analysis (The JSON payload you asked about)
-export const analyzeRegulatoryCircular = async (circular_id, title) => {
-  const payload = {
-    circular_id: circular_id,
-    title: title,
-    mode: "hybrid"
-  };
-  return await api.post('/security/analyze-circular', payload);
-};
-
-// --- THEME 1 & 2 HELPER FUNCTIONS ---
-
-// Document Forgery Detection (PDF Upload)
-export const verifyDocument = (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  return api.post('/auth/verify-document', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  });
-};
-
-// PII Data Masking
-export const maskData = (rawText) => api.post('/security/mask-data', { raw_data: rawText });
-
-// Phishing URL Scanner
-export const scanUrl = (url) => api.post('/security/scan-url', { url: url });
-
-// Document tampering & forgery scanner
-export const scanDocument = (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  return api.post('/security/scan-document', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-};
-
-
-// --- INTERCEPTORS (Phase 5: Elderly/Family Mode) ---
-
-api.interceptors.request.use((config) => {
-  // LocalStorage se check karega ki "Family Mode" on hai ya nahi
-  const isElderly = localStorage.getItem('familyMode') === 'true';
+// Interceptor to dynamically attach JWT token
+const authInterceptor = (config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
   
+  // Existing Family Mode Logic
+  const isElderly = localStorage.getItem('familyMode') === 'true';
   if (isElderly) {
-    // Agar File Upload (FormData) hai
     if (config.data instanceof FormData) {
       config.data.append('is_elderly', 'true');
-    } 
-    // Agar Normal JSON request hai
-    else if (config.method === 'post' || config.method === 'put') {
+    } else if (config.method === 'post' || config.method === 'put') {
       config.data = { ...config.data, is_elderly: true };
-    }
-    // Agar GET request hai toh query param mein jod do
-    else if (config.method === 'get') {
+    } else if (config.method === 'get') {
       config.params = { ...config.params, is_elderly: true };
     }
   }
   return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+};
 
-export default api;
+authApi.interceptors.request.use(authInterceptor, (error) => Promise.reject(error));
+securityApi.interceptors.request.use(authInterceptor, (error) => Promise.reject(error));
+
+// Security Endpoints (Python)
+export const fetchRegulatoryFeed = () => securityApi.get('/security/fetch-circulars');
+export const analyzeRegulatoryCircular = async (circular_id, title) => {
+  return await securityApi.post('/security/analyze-circular', { circular_id, title, mode: "hybrid" });
+};
+export const maskData = (rawText) => securityApi.post('/security/mask-data', { raw_data: rawText });
+export const scanUrl = (url) => securityApi.post('/security/scan-url', { url: url });
+export const scanDocument = (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return securityApi.post('/security/scan-document', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
+// Migrated Endpoint (Now points to Python Security API instead of Node Auth API)
+export const verifyDocument = (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return securityApi.post('/security/verify-document', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
+export default securityApi;

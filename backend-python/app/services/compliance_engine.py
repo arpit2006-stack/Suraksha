@@ -1,7 +1,7 @@
 import os
-import feedparser
 import io
 import requests
+from bs4 import BeautifulSoup
 from pypdf import PdfReader
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -16,19 +16,39 @@ class HybridComplianceAgent:
         self.vault_path = "app/utils/regulatory_vault/"
 
     async def fetch_live_circulars_list(self):
-        """Fetches latest 5 circulars via official RSS."""
+        """Fetches latest 3 circulars via BeautifulSoup scraping of RBI website."""
         try:
-            feed = feedparser.parse(self.rbi_rss_url)
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+            url = "https://www.rbi.org.in/Scripts/BS_CircularIndexDisplay.aspx"
+            res = requests.get(url, headers=headers, timeout=10)
+            soup = BeautifulSoup(res.text, 'html.parser')
+            
+            table = soup.find('table', {'class': 'tablebg'})
+            rows = table.find_all('tr') if table else soup.find_all('tr')
+            
             links = []
-            for entry in feed.entries[:5]:
-                links.append({
-                    "title": entry.title,
-                    "id": f"RBI/RSS/{os.urandom(2).hex()}",
-                    "link": entry.link
-                })
+            for r in rows:
+                a_tag = r.find('a')
+                if a_tag:
+                    tds = r.find_all('td')
+                    if len(tds) >= 4:
+                        circular_id = tds[0].text.strip()
+                        date = tds[1].text.strip()
+                        title = tds[3].text.strip()
+                        href = a_tag.get('href')
+                        full_link = f"https://www.rbi.org.in/Scripts/{href}" if href else ""
+                        
+                        links.append({
+                            "title": f"{circular_id}: {title}",
+                            "id": f"RBI/LIVE/{os.urandom(2).hex()}",
+                            "link": full_link,
+                            "date": date
+                        })
+                if len(links) >= 3:
+                    break
             return links
         except Exception as e:
-            print(f"RSS Error: {e}")
+            print(f"Scraping Error: {e}")
             return []
 
     async def analyze_live_circular(self, pdf_url: str, title: str):
