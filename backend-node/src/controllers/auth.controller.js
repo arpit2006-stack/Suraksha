@@ -1,5 +1,7 @@
 import { User } from '../models/signup.model.js';
 import { sendOtpEmail } from '../lib/email.js';
+import jwt from 'jsonwebtoken'; 
+
 
 // 1. SIGNUP CONTROLLER
 export const signup = async (req, res) => {
@@ -81,24 +83,38 @@ export const verifyOtp = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ message: "User nahi mila!" });
 
-        // Check if OTP exists and matches
+        // OTP Match Check
         if (!user.otp || user.otp !== otp) {
             return res.status(400).json({ message: "Galat OTP hai bhai!" });
         }
 
-        // Check Expiry
+        // Expiry Check
         if (new Date() > user.otpExpires) {
             return res.status(400).json({ message: "OTP expire ho gaya!" });
         }
 
-        // Clear OTP fields after successful verification
+        // OTP sahi hai -> DB se clear karo
         user.otp = undefined;
         user.otpExpires = undefined;
         await user.save();
 
+        // 2. GENERATE JWT TOKEN (Payload mein userId daal rahe hain)
+        const token = jwt.sign(
+            { userId: user._id }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '1h' } // Token 1 hour ke liye valid rahega
+        );
+
+        // 3. Response mein token bhej do
         res.status(200).json({
             success: true,
-            message: "🎉 Authentication Successful! SuRaksha Dashboard open."
+            message: "🎉 Authentication Successful! SuRaksha Dashboard open.",
+            token, // Ye token frontend save karega
+            user: {
+                id: user._id,
+                fullName: user.fullName,
+                email: user.email
+            }
         });
 
     } catch (error) {

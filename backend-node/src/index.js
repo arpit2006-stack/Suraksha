@@ -4,6 +4,7 @@ import cors from 'cors';
 import { connectDB } from './lib/db.js';
 import authRoutes from './routes/auth.route.js';
 
+
 // .env load karo
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(cors());
 app.use(express.json()); // JSON data handle karne ke liye
 
 app.use('/auth', authRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 
