@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FileSearch, ArrowRight } from 'lucide-react';
-import { scanDocument } from '../../api/axios';
+import { verifyDocument } from '../../api/axios';
 import { mockDocumentVerify } from '../../api/mockData';
 import { buildDocumentEntry, VERDICT_BADGE } from '../../utils/documentVerdict';
 import { useBilingual } from '../../hooks/useBilingual';
@@ -10,20 +10,30 @@ export default function RecentDocumentsPanel({ documents, onDocumentScanned }) {
   const { t } = useBilingual();
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
 
   const runScan = async (file) => {
     setLoading(true);
+    setUploadError(null);
     try {
-      let apiData;
+      let forensic;
       try {
-        const { data } = await scanDocument(file);
-        apiData = data.status === 'success' ? data : data;
-      } catch {
-        apiData = mockDocumentVerify(file.name.toLowerCase().includes('clean') ? 'GENUINE' : 'FORGED');
+        const { data } = await verifyDocument(file);
+        if (data.status !== 'success') {
+          throw new Error(data.detail || 'Verification failed');
+        }
+        forensic = data.verification_data ?? data;
+      } catch (err) {
+        console.warn('[verify-document]', err);
+        forensic = mockDocumentVerify(
+          file.name.toLowerCase().includes('clean') ? 'GENUINE' : 'FORGED',
+        );
       }
-      const entry = buildDocumentEntry(file.name, apiData);
+      const entry = buildDocumentEntry(file.name, forensic);
       onDocumentScanned?.(entry);
       setModalOpen(false);
+    } catch (err) {
+      setUploadError(err.message || 'Document scan failed. Check the Python backend on port 8000.');
     } finally {
       setLoading(false);
     }
@@ -70,6 +80,7 @@ export default function RecentDocumentsPanel({ documents, onDocumentScanned }) {
         onClose={() => setModalOpen(false)}
         onUpload={runScan}
         loading={loading}
+        error={uploadError}
       />
     </>
   );

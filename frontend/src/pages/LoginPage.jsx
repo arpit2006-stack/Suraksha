@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { Shield } from 'lucide-react';
 import { useAuth, INTERNAL_ROLES } from '../context/AuthContext';
 
 export default function LoginPage() {
-  const { login, isAuthenticated, isInternalEmployee } = useAuth();
+  const { login, loading, isAuthenticated, isInternalEmployee } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/dashboard';
@@ -15,9 +15,16 @@ export default function LoginPage() {
   const [role, setRole] = useState('bank_employee');
   const [error, setError] = useState('');
 
+  if (loading) {
+    return (
+      <div className="route-loading">
+        <div className="spinner route-loading__spinner" aria-hidden="true" />
+      </div>
+    );
+  }
+
   if (isAuthenticated && isInternalEmployee) {
-    navigate('/dashboard', { replace: true });
-    return null;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = (e) => {

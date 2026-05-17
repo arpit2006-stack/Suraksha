@@ -48,9 +48,11 @@ export default function UnderwriterDashboard() {
   const handleDocumentScanned = useCallback((entry) => {
     setDocuments((prev) => [entry, ...prev].slice(0, 12));
 
-    if (!isFlaggedVerdict(entry.verdict)) return;
+    if (entry.verdict === 'tampered') {
+      setDocTamperingCount((c) => c + 1);
+    }
 
-    setDocTamperingCount((c) => c + 1);
+    if (!isFlaggedVerdict(entry.verdict)) return;
 
     const time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
     const isTampered = entry.verdict === 'tampered';

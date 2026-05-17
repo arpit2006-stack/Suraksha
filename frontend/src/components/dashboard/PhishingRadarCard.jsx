@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Search, Globe } from 'lucide-react';
-import api from '../../api/axios';
+import { scanUrl } from '../../api/axios';
+import { mockScanUrl } from '../../api/mockData';
 import { useBilingual } from '../../hooks/useBilingual';
 import GhostReconTerminal from './GhostReconTerminal';
 
@@ -20,7 +21,17 @@ export default function PhishingRadarCard({ onHighThreat }) {
     setError(null);
     setResult(null);
     try {
-      const { data } = await api.post('/security/scan-url', { url: trimmed });
+      let data;
+      try {
+        const res = await scanUrl(trimmed);
+        data = res.data;
+        if (data.status === 'error') {
+          throw new Error(data.reasoning || 'Scan failed');
+        }
+      } catch (err) {
+        console.warn('[scan-url]', err);
+        data = { ...mockScanUrl(87), ghost_recon: { title: 'Mock — backend offline', ssl: '—', country: '—', rep: '—' } };
+      }
       setResult(data);
       if (data.threat_score > THREAT_THRESHOLD) {
         onHighThreat?.({
@@ -31,8 +42,8 @@ export default function PhishingRadarCard({ onHighThreat }) {
           reasoning: data.reasoning,
         });
       }
-    } catch {
-      setError('Scan failed. Ensure the Python backend is running on port 8000.');
+    } catch (err) {
+      setError(err.message || 'Scan failed. Ensure the Python backend is running on port 8000.');
     } finally {
       setLoading(false);
     }
@@ -63,7 +74,7 @@ export default function PhishingRadarCard({ onHighThreat }) {
       {error && <p className="error-text">{error}</p>}
 
       <div className="radar-body">
-        <GhostReconTerminal recon={result?.ghost_recon} />
+        <GhostReconTerminal recon={result?.ghost_recon} loading={loading} threatScore={result?.threat_score} />
         {result && (
           <div className="radar-score">
             <div className="radar-score__value" data-risk={result.threat_score > 70 ? 'high' : result.threat_score > 30 ? 'mid' : 'low'}>

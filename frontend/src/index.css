@@ -949,6 +949,15 @@ body {
 .ghost-terminal__head { display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.35rem; color: #86efac; }
 .ghost-terminal__placeholder { font-style: italic; font-size: 0.7rem; }
 .ghost-terminal__body { margin: 0; white-space: pre-wrap; line-height: 1.5; }
+.ghost-terminal--loading { border-color: var(--accent); box-shadow: 0 0 12px rgba(0, 168, 89, 0.15); }
+.ghost-terminal__cursor {
+  display: inline-block;
+  color: var(--accent);
+  animation: ghost-blink 0.85s step-end infinite;
+}
+@keyframes ghost-blink {
+  50% { opacity: 0; }
+}
 
 .radar-score__value {
   font-size: clamp(2rem, 6vw, 2.75rem);

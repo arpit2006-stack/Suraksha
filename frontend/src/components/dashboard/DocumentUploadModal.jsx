@@ -5,7 +5,7 @@ import { useBilingual } from '../../hooks/useBilingual';
 
 const ACCEPT = 'application/pdf,image/jpeg,image/png,image/webp';
 
-export default function DocumentUploadModal({ open, onClose, onUpload, loading }) {
+export default function DocumentUploadModal({ open, onClose, onUpload, loading, error: externalError }) {
   const { t } = useBilingual();
   const [dragging, setDragging] = useState(false);
   const [file, setFile] = useState(null);
@@ -107,10 +107,10 @@ export default function DocumentUploadModal({ open, onClose, onUpload, loading }
               )}
             </div>
 
-            {error && <p className="error-text">{error}</p>}
+            {(error || externalError) && <p className="error-text">{error || externalError}</p>}
             {loading && (
               <p className="doc-upload-loading">
-                <span className="spinner" /> {t('docAnalyzing')}
+                <span className="spinner" /> {t('docScanning')}
               </p>
             )}
 
@@ -119,7 +119,7 @@ export default function DocumentUploadModal({ open, onClose, onUpload, loading }
                 {t('docCancel')}
               </button>
               <button type="button" className="btn btn--primary" onClick={submit} disabled={!file || loading}>
-                {loading ? t('docAnalyzing') : t('docScanBtn')}
+                {loading ? t('docScanning') : t('docScanBtn')}
               </button>
             </div>
           </motion.div>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, X, ChevronRight } from 'lucide-react';
-import api, { analyzeRegulatoryCircular } from '../../api/axios';
+import { fetchRegulatoryFeed, analyzeRegulatoryCircular } from '../../api/axios';
+import { mockRegulatoryScan } from '../../api/mockData';
 import { useBilingual } from '../../hooks/useBilingual';
 
 const statusClass = {
@@ -21,10 +22,15 @@ export default function RegulatoryLiveFeed() {
   const fetchFeed = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/security/fetch-circulars');
-      if (data.status === 'success') setCirculars(data.circulars || []);
-    } catch {
-      setCirculars([]);
+      const { data } = await fetchRegulatoryFeed();
+      if (data.status === 'success') {
+        setCirculars(data.circulars || []);
+      } else {
+        setCirculars([]);
+      }
+    } catch (err) {
+      console.warn('[fetch-circulars]', err);
+      setCirculars(mockRegulatoryScan().circulars);
     } finally {
       setLoading(false);
     }
@@ -77,7 +83,10 @@ export default function RegulatoryLiveFeed() {
               <button type="button" className="reg-feed__item" onClick={() => openAnalyze(c)}>
                 <div className="reg-feed__main">
                   <span className="reg-feed__title">{c.title}</span>
-                  <span className="reg-feed__source">{c.source || 'Vault'}</span>
+                  <span className="reg-feed__source">
+                    {c.source || 'Vault'}
+                    {c.date ? ` • Released: ${c.date}` : ''}
+                  </span>
                 </div>
                 <span className={`badge ${statusClass[c.status] || 'badge--info'}`}>{c.status}</span>
                 <ChevronRight size={14} />
