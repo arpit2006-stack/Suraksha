@@ -4,6 +4,8 @@ const userSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true, lowercase: true },
     dob: { type: String, required: true },
+    phone: { type: String },
+    address: { type: String },
     
     // Banking Details
     accountNo: { type: String, required: true },

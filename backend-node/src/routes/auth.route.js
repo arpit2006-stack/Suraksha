@@ -1,5 +1,5 @@
 import express from 'express';
-import { signup, login , verifyOtp } from '../controllers/auth.controller.js';
+import { signup, login , verifyOtp, updateProfile } from '../controllers/auth.controller.js';
 import { protectRoute } from '../middleware/auth.middlewarre.js';
 
 const router = express.Router();
@@ -15,5 +15,7 @@ router.get('/profile', protectRoute, (req, res) => {
         user: req.user
     });
 });
+
+router.put('/profile', protectRoute, updateProfile);
 
 export default router;

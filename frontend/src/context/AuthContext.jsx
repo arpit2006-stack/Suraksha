@@ -51,18 +51,18 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const login = useCallback((credentials) => {
-    const role = credentials.role || 'bank_employee';
+  const login = useCallback(({ user: userData, token, role }) => {
+    const finalRole = role || userData?.role || 'bank_employee';
     const session = {
-      id: credentials.id || `emp-${Date.now()}`,
-      name: credentials.name?.trim() || '',
-      email: credentials.email || '',
-      role,
-      branch: credentials.branch || '',
+      id: userData?.id || userData?._id || `emp-${Date.now()}`,
+      name: userData?.fullName || userData?.name || '',
+      email: userData?.email || '',
+      role: finalRole,
+      branch: userData?.branch || '',
       loggedInAt: new Date().toISOString(),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-    localStorage.setItem('token', `suraksha-${session.id}`);
+    localStorage.setItem('token', token); // Saving the REAL JWT token
     setUser(session);
     return session;
   }, []);

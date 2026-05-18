@@ -58,4 +58,11 @@ export const verifyDocument = (file) => {
   });
 };
 
+// Auth Endpoints (Node)
+export const requestSignup = (data) => authApi.post('/signup', data);
+export const requestLoginOtp = (email) => authApi.post('/login', { email });
+export const verifyLoginOtp = (email, otp) => authApi.post('/verify-otp', { email, otp });
+export const fetchProfile = () => authApi.get('/profile');
+export const updateProfile = (data) => authApi.put('/profile', data);
+
 export default securityApi;
